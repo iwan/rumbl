@@ -5,6 +5,10 @@
         Oops, something went wrong! Please check the errors below.
 
   .form-group
+    = label f, :category_id, class: "control-label"
+    = select f, :category_id, @categories, class: "form-control", prompt: "Choose a category"
+
+  .form-group
     = label f, :url, class: "control-label"
     = text_input f, :url, class: "form-control"
     = error_tag f, :url

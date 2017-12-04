@@ -1,6 +1,6 @@
 defmodule Rumbl.Video do
   use Rumbl.Web, :model
-  @required_fields [:url, :title, :description]
+  @required_fields [:url, :title, :description, :category_id]
   @optional_fields []
 
   schema "videos" do
@@ -8,6 +8,7 @@ defmodule Rumbl.Video do
     field :title, :string
     field :description, :string
     belongs_to :user, Rumbl.User
+    belongs_to :category, Rumbl.Category
 
     timestamps()
   end
@@ -17,9 +18,8 @@ defmodule Rumbl.Video do
   """
   def changeset(struct, params \\ %{}) do
     struct
-    # |> cast(params, [:url, :title, :description])
     |> cast(params, @required_fields, @optional_fields)
-    # |> validate_required([:url, :title, :description])
     |> validate_required(@required_fields)
+    |> assoc_constraint(:category)
   end
 end
