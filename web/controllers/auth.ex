@@ -4,15 +4,25 @@ defmodule Rumbl.Auth do
   import Phoenix.Controller
   alias Rumbl.Router.Helpers
 
+
   def init(opts) do
     Keyword.fetch!(opts, :repo)
   end
 
+
   def call(conn, repo) do
     user_id = get_session(conn, :user_id)
-    user    = user_id && repo.get(Rumbl.User, user_id)
-    assign(conn, :current_user, user)
+
+    cond do
+      user = conn.assigns[:current_user] -> # used for tests
+        conn
+      user = user_id && repo.get(Rumbl.User, user_id) ->
+        assign(conn, :current_user, user)
+      true ->
+        assign(conn, :current_user, nil)
+    end
   end
+
 
   def login(conn, user) do
     conn
@@ -21,13 +31,14 @@ defmodule Rumbl.Auth do
     |> configure_session(renew: true)
   end
 
+
   def login_by_username_and_pass(conn, username, given_pass, opts) do
     repo = Keyword.fetch!(opts, :repo)
     user = repo.get_by(Rumbl.User, username: username)
 
-    IO.puts("given_pass: #{given_pass}")
-    IO.puts("user.username: #{user.username}")
-    IO.puts("user.password_hash: #{user.password_hash}")
+    # IO.puts("given_pass: #{given_pass}")
+    # IO.puts("user.username: #{user.username}")
+    # IO.puts("user.password_hash: #{user.password_hash}")
     cond do
       user && checkpw(given_pass, user.password_hash) ->
         {:ok, login(conn, user)}
@@ -38,6 +49,7 @@ defmodule Rumbl.Auth do
         {:error, :not_found, conn}
     end
   end
+
 
   def logout(conn) do
     configure_session(conn, drop: true)
@@ -54,5 +66,4 @@ defmodule Rumbl.Auth do
       |> halt()
     end
   end
-
 end

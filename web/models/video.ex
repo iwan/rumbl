@@ -1,7 +1,7 @@
 defmodule Rumbl.Video do
   use Rumbl.Web, :model
-  @required_fields [:url, :title, :description, :category_id]
-  @optional_fields []
+  @required_fields [:url, :title, :description]
+  @optional_fields [:category_id]
 
   schema "videos" do
     field :url, :string
